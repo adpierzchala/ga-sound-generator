@@ -73,7 +73,7 @@
             </div>
             <!-- Buttons for generating and toggling GA parameters -->
             <div class="d-flex justify-content-between">
-                <button type="button" class="btn btn-custom" onclick="generateSong()">Generate</button>
+                <button type="button" class="btn btn-custom" onclick="generatesound()">Generate</button>
                 <button type="button" class="btn btn-secondary" onclick="toggleGAParameters()">See GA Parameters</button>
             </div>
         </form>
@@ -98,7 +98,7 @@
     <div class="card" id="result" style="display: none;">
         <!-- Display generation status -->
         <h5 id="status"></h5>
-        <!-- Audio player for the generated song -->
+        <!-- Audio player for the generated sound -->
         <audio id="audioPlayer" controls style="width: 100%;"></audio>
         <!-- Button to toggle notes visibility -->
         <button class="btn btn-secondary mt-3" onclick="toggleNotes()">See Notes</button>
@@ -107,8 +107,8 @@
             <h6>Generated Notes:</h6>
             <div id="notesContent"></div>
         </div>
-        <!-- Button to download the generated song -->
-        <button class="btn btn-success mt-3" onclick="downloadSong()">Download Song</button>
+        <!-- Button to download the generated sound -->
+        <button class="btn btn-success mt-3" onclick="downloadsound()">Download Sound</button>
     </div>
 
     <script>
@@ -148,7 +148,7 @@
             }
         }
 
-        async function generateSong() {
+        async function generatesound() {
             const formData = new FormData(document.getElementById('generateForm'));
             formData.append('num_generations', document.getElementById('num_generations').value);
             formData.append('mutation_rate', document.getElementById('mutation_rate').value);
@@ -177,15 +177,15 @@
                     notesContent.innerHTML = '';
                 }
 
-                // Force the browser to fetch the latest song
+                // Force the browser to fetch the latest sound
                 document.getElementById('audioPlayer').src = '/play?' + new Date().getTime();
             } else {
                 alert(data.error);
             }
         }
 
-        // Function to download the generated song
-        function downloadSong() {
+        // Function to download the generated sound
+        function downloadsound() {
             window.location.href = '/download';
         }
     </script>
