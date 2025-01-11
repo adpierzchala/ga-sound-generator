@@ -34,14 +34,14 @@ def apply_fade(data, fade_duration=0.01):
     return data
 
 # Apply fade-out 
-def apply_fade_out(song, fade_duration=0.05):
-    """Apply a fade-out to the entire song."""
+def apply_fade_out(sound, fade_duration=0.05):
+    """Apply a fade-out to the entire sound."""
     fade_samples = int(fade_duration * SAMPLE_RATE)
-    if len(song) < fade_samples:
-        fade_samples = len(song) # Adjust for very short songs
+    if len(sound) < fade_samples:
+        fade_samples = len(sound) # Adjust for very short sounds
     fade_out = np.linspace(1, 0, fade_samples)
-    song[-fade_samples:] = (song[-fade_samples:] * fade_out).astype(np.int16)
-    return song
+    sound[-fade_samples:] = (sound[-fade_samples:] * fade_out).astype(np.int16)
+    return sound
 
 
 # Load a sample
@@ -72,8 +72,8 @@ def load_sample(instrument, note, tempo):
 
 # Play a phrase
 def play_phrase_with_samples(phrase, tempo):
-    """Generate a full song from a phrase using the provided samples."""
-    song = np.array([], dtype=np.int16)
+    """Generate a full sound from a phrase using the provided samples."""
+    sound = np.array([], dtype=np.int16)
     for note in phrase:
         note_name = note["note"]
         duration = 60 / tempo * note["duration"]
@@ -92,12 +92,12 @@ def play_phrase_with_samples(phrase, tempo):
         # Normalize the combined sample
         combined_sample = normalize_audio(combined_sample)
 
-        # Concatenate to the final song
-        song = np.concatenate((song, combined_sample))
+        # Concatenate to the final sound
+        sound = np.concatenate((sound, combined_sample))
 
-    # Apply fade-out effect to the full song 
-    song = apply_fade_out(song, fade_duration=0.5)
-    return normalize_audio(song) # Final normalization
+    # Apply fade-out effect to the full sound 
+    sound = apply_fade_out(sound, fade_duration=0.5)
+    return normalize_audio(sound) # Final normalization
 
 
 # Generate an initial population of musical phrases
@@ -242,14 +242,14 @@ def genetic_algorithm(population, generations, mutation_rate, allowed_instrument
 def index():
     return render_template("index.html") # Render the main interface
 
-# Route to handle the generation of a new song
+# Route to handle the generation of a new sound
 @app.route("/generate/", methods=["POST"])
 def generate():
     """
-    Handle POST requests to generate a song using genetic algorithm parameters.
+    Handle POST requests to generate a sound using genetic algorithm parameters.
     Accepts user-defined tempo, instruments, phrase length, number of generations, and mutation rate.
     """
-    global generated_song, generated_notes
+    global generated_sound, generated_notes
 
     try:
         # Extract parameters from the form submission
@@ -279,33 +279,33 @@ def generate():
         
         # Store the generated notes and convert them into audio
         generated_notes = best_phrase
-        generated_song = play_phrase_with_samples(best_phrase, tempo)
+        generated_sound = play_phrase_with_samples(best_phrase, tempo)
 
         # Return success message
-        return jsonify({"message": "Song generated successfully!"})
+        return jsonify({"message": "Sound generated successfully!"})
     except Exception as e:
 
         # Handle and return errors
         return jsonify({"error": str(e)}), 400
 
-# Route to handle playing the generated song
+# Route to handle playing the generated sound
 @app.route("/play/", methods=["GET"])
 def play():
     """
-    Serve the generated song as a WAV file to the user.
+    Serve the generated sound as a WAV file to the user.
     """
 
-    global generated_song
+    global generated_sound
 
-    # Check if a song has been generated
-    if generated_song is None:
-        return jsonify({"error": "No song generated yet."}), 400
+    # Check if a sound has been generated
+    if generated_sound is None:
+        return jsonify({"error": "No sound generated yet."}), 400
 
-    # Define the file path for saving the generated song
-    output_file = os.path.join(os.getcwd(), "generated_song.wav")
+    # Define the file path for saving the generated sound
+    output_file = os.path.join(os.getcwd(), "generated_sound.wav")
     
-    # Write the generated song to a WAV file
-    write(output_file, SAMPLE_RATE, generated_song)
+    # Write the generated sound to a WAV file
+    write(output_file, SAMPLE_RATE, generated_sound)
 
     # Ensure the file exists before sending it
     if not os.path.exists(output_file):
@@ -335,22 +335,22 @@ def notes():
     # Return the notes as a JSON response
     return jsonify({"notes": notes})
 
-# Route to allow downloading the generated song
+# Route to allow downloading the generated sound
 @app.route("/download/", methods=["GET"])
 def download():
     """
-    Allow the user to download the generated song as a WAV file.
+    Allow the user to download the generated sound as a WAV file.
     """
-    global generated_song
+    global generated_sound
 
-    # Check if a song has been generated
-    if generated_song is None:
-        return jsonify({"error": "No song generated yet."}), 400
+    # Check if a sound has been generated
+    if generated_sound is None:
+        return jsonify({"error": "No sound generated yet."}), 400
 
-    # Define the file path for the generated song
-    output_file = os.path.join(os.getcwd(), "generated_song.wav")
-    # Write the song to a file
-    write(output_file, SAMPLE_RATE, generated_song)
+    # Define the file path for the generated sound
+    output_file = os.path.join(os.getcwd(), "generated_sound.wav")
+    # Write the sound to a file
+    write(output_file, SAMPLE_RATE, generated_sound)
 
     # Send the file as a downloadable response
     return send_file(output_file, as_attachment=True, mimetype="audio/wav")
