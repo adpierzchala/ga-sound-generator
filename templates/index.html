@@ -49,10 +49,22 @@
                 <label for="tempo" class="form-label">Enter Tempo (BPM):</label>
                 <input type="number" id="tempo" name="tempo" class="form-control" value="120" required>
             </div>
-            <!-- Input for instruments -->
+            <!-- Checkboxes for instruments -->
             <div class="mb-3">
-                <label for="instruments" class="form-label">Enter Instruments (comma-separated):</label>
-                <input type="text" id="instruments" name="instruments" class="form-control" value="piano, violin, flute" required>
+                <label class="form-label">Select Instruments:</label><br>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="piano" name="instruments" value="piano">
+                    <label class="form-check-label" for="piano">Piano</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="violin" name="instruments" value="violin">
+                    <label class="form-check-label" for="violin">Violin</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="flute" name="instruments" value="flute">
+                    <label class="form-check-label" for="flute">Flute</label>
+                </div>
+                <!-- Add more instruments as needed -->
             </div>
             <!-- Input for phrase length -->
             <div class="mb-3">
@@ -100,11 +112,10 @@
     </div>
 
     <script>
-        // Toggle visibility of GA parameters
+        // Function to toggle visibility of GA Parameters
         function toggleGAParameters() {
             const gaParametersDiv = document.getElementById('gaParameters');
             const toggleButton = document.querySelector('button[onclick="toggleGAParameters()"]');
-            
             if (window.getComputedStyle(gaParametersDiv).display === 'none') {
                 gaParametersDiv.style.display = 'block';
                 toggleButton.innerText = 'Hide GA Parameters';
@@ -114,7 +125,7 @@
             }
         }
 
-        // Toggle visibility of notes section
+        // Toggle visibility of notes
         async function toggleNotes() {
             const notesDiv = document.getElementById('notes');
             const notesContent = document.getElementById('notesContent');
@@ -137,7 +148,6 @@
             }
         }
 
-        // Generate a song and update results
         async function generateSong() {
             const formData = new FormData(document.getElementById('generateForm'));
             formData.append('num_generations', document.getElementById('num_generations').value);
@@ -149,10 +159,8 @@
             if (response.ok) {
                 document.getElementById('result').style.display = 'block';
                 document.getElementById('status').innerText = data.message;
-                // Add a timestamp to force the browser to fetch the latest song
-                document.getElementById('audioPlayer').src = '/play?' + new Date().getTime();
 
-                // Hide notes and reset the button after generating
+                // Reset the notes section and button
                 const notesDiv = document.getElementById('notes');
                 const toggleButton = document.querySelector('button[onclick="toggleNotes()"]');
                 notesDiv.style.display = 'none';
@@ -168,12 +176,15 @@
                 } else {
                     notesContent.innerHTML = '';
                 }
+
+                // Force the browser to fetch the latest song
+                document.getElementById('audioPlayer').src = '/play?' + new Date().getTime();
             } else {
                 alert(data.error);
             }
         }
 
-        // Download the generated song
+        // Function to download the generated song
         function downloadSong() {
             window.location.href = '/download';
         }
