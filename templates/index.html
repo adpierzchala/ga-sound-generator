@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GA Sound Generator</title>
+    <!-- Include Bootstrap CSS for styling -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
+        /* General styles for the body and header */
         body {
             font-family: 'Roboto', sans-serif;
             background: #f4f4f9;
@@ -16,40 +18,48 @@
             background: linear-gradient(to right, #4facfe, #00f2fe);
             color: white;
         }
+        /* Card styling for consistent look */
         .card {
             margin: 20px auto;
             padding: 20px;
             max-width: 600px;
             box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
         }
+        /* Custom button style */
         .btn-custom {
             background-color: #4facfe;
             color: white;
         }
+        /* Initially hide the GA Parameters section */
         #gaParameters {
             display: none; /* Initially hide the GA Parameters */
         }
     </style>
 </head>
 <body>
+    <!-- Page header -->
     <div class="header">
         <h1>GA Sound Generator</h1>
     </div>
-
+    <!-- Form to input generation parameters -->
     <div class="card">
         <form id="generateForm">
+            <!-- Input for tempo -->
             <div class="mb-3">
                 <label for="tempo" class="form-label">Enter Tempo (BPM):</label>
                 <input type="number" id="tempo" name="tempo" class="form-control" value="120" required>
             </div>
+            <!-- Input for instruments -->
             <div class="mb-3">
                 <label for="instruments" class="form-label">Enter Instruments (comma-separated):</label>
                 <input type="text" id="instruments" name="instruments" class="form-control" value="piano, violin, flute" required>
             </div>
+            <!-- Input for phrase length -->
             <div class="mb-3">
                 <label for="phrase_length" class="form-label">Enter Phrase Length (number of notes):</label>
                 <input type="number" id="phrase_length" name="phrase_length" class="form-control" value="10" required>
             </div>
+            <!-- Buttons for generating and toggling GA parameters -->
             <div class="d-flex justify-content-between">
                 <button type="button" class="btn btn-custom" onclick="generateSong()">Generate</button>
                 <button type="button" class="btn btn-secondary" onclick="toggleGAParameters()">See GA Parameters</button>
@@ -57,35 +67,44 @@
         </form>
     </div>
 
+    <!-- Section for displaying GA Parameters -->
     <div class="card" id="gaParameters">
         <h5>GA Parameters</h5>
+        <!-- Input for the number of generations -->
         <div class="mb-3">
             <label for="num_generations" class="form-label">Number of Generations:</label>
             <input type="number" id="num_generations" name="num_generations" class="form-control" value="20" required>
         </div>
+        <!-- Input for mutation rate -->
         <div class="mb-3">
             <label for="mutation_rate" class="form-label">Mutation Rate:</label>
             <input type="number" step="0.01" id="mutation_rate" name="mutation_rate" class="form-control" value="0.1" required>
         </div>
     </div>
-
+    
+    <!-- Section for displaying results -->
     <div class="card" id="result" style="display: none;">
+        <!-- Display generation status -->
         <h5 id="status"></h5>
+        <!-- Audio player for the generated song -->
         <audio id="audioPlayer" controls style="width: 100%;"></audio>
+        <!-- Button to toggle notes visibility -->
         <button class="btn btn-secondary mt-3" onclick="toggleNotes()">See Notes</button>
-        <div id="notes" style="display: none;"> <!-- Hide notes initially -->
+        <!-- Notes section, initially hidden -->
+        <div id="notes" style="display: none;"> 
             <h6>Generated Notes:</h6>
             <div id="notesContent"></div>
         </div>
+        <!-- Button to download the generated song -->
         <button class="btn btn-success mt-3" onclick="downloadSong()">Download Song</button>
     </div>
 
     <script>
+        // Toggle visibility of GA parameters
         function toggleGAParameters() {
             const gaParametersDiv = document.getElementById('gaParameters');
             const toggleButton = document.querySelector('button[onclick="toggleGAParameters()"]');
             
-            // Check the computed style directly for the current state
             if (window.getComputedStyle(gaParametersDiv).display === 'none') {
                 gaParametersDiv.style.display = 'block';
                 toggleButton.innerText = 'Hide GA Parameters';
@@ -95,6 +114,30 @@
             }
         }
 
+        // Toggle visibility of notes section
+        async function toggleNotes() {
+            const notesDiv = document.getElementById('notes');
+            const notesContent = document.getElementById('notesContent');
+            const toggleButton = document.querySelector('button[onclick="toggleNotes()"]');
+
+            if (notesDiv.style.display === 'none' || notesDiv.style.display === '') {
+                const response = await fetch('/notes');
+                const data = await response.json();
+
+                if (response.ok) {
+                    notesContent.innerHTML = data.notes.join('<br>');
+                    notesDiv.style.display = 'block';
+                    toggleButton.innerText = 'Hide Notes';
+                } else {
+                    alert(data.error);
+                }
+            } else {
+                notesDiv.style.display = 'none';
+                toggleButton.innerText = 'See Notes'; 
+            }
+        }
+
+        // Generate a song and update results
         async function generateSong() {
             const formData = new FormData(document.getElementById('generateForm'));
             formData.append('num_generations', document.getElementById('num_generations').value);
@@ -109,7 +152,7 @@
                 // Add a timestamp to force the browser to fetch the latest song
                 document.getElementById('audioPlayer').src = '/play?' + new Date().getTime();
 
-                // Always hide notes and reset the button after generating
+                // Hide notes and reset the button after generating
                 const notesDiv = document.getElementById('notes');
                 const toggleButton = document.querySelector('button[onclick="toggleNotes()"]');
                 notesDiv.style.display = 'none';
@@ -130,31 +173,7 @@
             }
         }
 
-
-        async function toggleNotes() {
-            const notesDiv = document.getElementById('notes');
-            const notesContent = document.getElementById('notesContent');
-            const toggleButton = document.querySelector('button[onclick="toggleNotes()"]');
-
-            if (notesDiv.style.display === 'none' || notesDiv.style.display === '') {
-                // Fetch notes and show them
-                const response = await fetch('/notes');
-                const data = await response.json();
-
-                if (response.ok) {
-                    notesContent.innerHTML = data.notes.join('<br>');
-                    notesDiv.style.display = 'block';
-                    toggleButton.innerText = 'Hide Notes';
-                } else {
-                    alert(data.error);
-                }
-            } else {
-                // Hide notes
-                notesDiv.style.display = 'none';
-                toggleButton.innerText = 'See Notes'; 
-            }
-        }
-
+        // Download the generated song
         function downloadSong() {
             window.location.href = '/download';
         }
