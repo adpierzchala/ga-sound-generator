@@ -16,22 +16,22 @@ app = Flask(__name__)
 
 
 # Normalize audio
-def normalize_audio(data):
+def normalize_audio(sound):
     """Normalize audio to the range of int16."""
-    if np.max(np.abs(data)) == 0: # Avoid division by zero
-        return data
-    return (data / np.max(np.abs(data)) * 32767).astype(np.int16) 
+    if np.max(np.abs(sound)) == 0: # Avoid division by zero
+        return sound
+    return (sound / np.max(np.abs(sound)) * 32767).astype(np.int16) 
 
 
 # Apply fade-in and fade-out 
-def apply_fade(data, fade_duration=0.01):
+def apply_fade(sound, fade_duration=0.01):
     """Apply fade-in and fade-out to an audio sample."""
     fade_samples = int(fade_duration * SAMPLE_RATE)
     fade_in = np.linspace(0, 1, fade_samples)
     fade_out = np.linspace(1, 0, fade_samples)
-    data[:fade_samples] = data[:fade_samples] * fade_in
-    data[-fade_samples:] = data[-fade_samples:] * fade_out
-    return data
+    sound[:fade_samples] = sound[:fade_samples] * fade_in
+    sound[-fade_samples:] = sound[-fade_samples:] * fade_out
+    return sound
 
 # Apply fade-out 
 def apply_fade_out(sound, fade_duration=0.05):
@@ -53,17 +53,17 @@ def load_sample(instrument, note, tempo):
     file_path = os.path.join(SAMPLE_DIR, f"{note}_{instrument}.wav")
 
     try:
-        rate, data = read(file_path)
+        rate, sound = read(file_path)
         if rate != SAMPLE_RATE:
             # Resample to match the desired sample rate
-            num_samples = int(len(data) * SAMPLE_RATE / rate)
-            # Convert stereo to mono by averaging channels
-            data = resample(data, num_samples).astype(np.int16)
-        if len(data.shape) == 2:
-            data = data.mean(axis=1).astype(np.int16)
-        data = normalize_audio(data) # Normalize the audio
-        data = apply_fade(data) # Apply fade effect
-        return data
+            num_samples = int(len(sound) * SAMPLE_RATE / rate)
+            sound = resample(sound, num_samples).astype(np.int16)
+        
+        if len(sound.shape) == 2:
+            sound = sound.mean(axis=1).astype(np.int16)
+        sound = normalize_audio(sound) # Normalize the audio
+        sound = apply_fade(sound) # Apply fade effect
+        return sound
     except FileNotFoundError:
         print(f"Sample file {file_path} not found.")
         # Return silence if the sample file is missing
@@ -110,8 +110,7 @@ def generate_initial_population_with_notes(pop_size, num_notes, instruments):
             note_duration = random.choice([0.25, 0.5, 1])  # Random duration
             note = random.choice(NOTES + ["REST"])  # Random note or REST
             
-            instruments_for_note = [] if note == "REST" else random.sample(instruments, len(instruments))
-            instruments_for_note = list(set(instruments_for_note))
+            instruments_for_note = [] if note == "REST" else random.sample(instruments, random.randint(1, len(instruments)))
 
             phrase.append({
                 "note": note,
@@ -128,7 +127,6 @@ def fitness_function(phrase):
     """Evaluate the fitness of a musical phrase."""
     score = 0
     patterns = set()
-    instruments_used = set()
     long_notes = 0
     short_notes = 0
     rest_count = 0
@@ -159,18 +157,6 @@ def fitness_function(phrase):
             elif interval > 7:
                 score -= 1  # Penalize large leaps
 
-        # Reward harmonic relationships between instruments playing the same note
-        if note["note"] != "REST":
-            note_instruments = note.get("instruments", ["piano"])
-            if len(note_instruments) > 1:
-                for j in range(len(note_instruments)):
-                    for k in range(j + 1, len(note_instruments)):
-                        interval = abs(NOTES.index(note["note"]))
-                        if interval in HARMONIC_INTERVALS:
-                            score += 0.5  # Smaller reward for harmonic intervals between instruments
-
-            instruments_used.update(note_instruments)
-
         # Reward repeated patterns
         if i >= 2:
             pattern = (phrase[i - 2]["note"], phrase[i - 1]["note"], note["note"])
@@ -188,8 +174,6 @@ def fitness_function(phrase):
     balance = min(long_notes, short_notes)
     score += balance * 0.5
 
-    # Add score based on the number of unique instruments used across the phrase
-    score += len(instruments_used) * 0.5
 
     # Penalize too many REST notes overall
     if rest_count > len(phrase) * 0.2:
@@ -228,14 +212,22 @@ def genetic_algorithm(population, generations, mutation_rate, allowed_instrument
                 individual[mutate_point] = {
                     "note": random.choice(NOTES + ["REST"]),
                     "duration": random.choice([0.25, 0.5, 1]),
-                    "instruments": [] if individual[mutate_point]["note"] == "REST" else random.sample(allowed_instruments, len(allowed_instruments)),
+                    "instruments": [] if individual[mutate_point]["note"] == "REST" else random.sample(allowed_instruments, random.randint(1, len(allowed_instruments))),
                 }
 
         # Update the population
         population = new_population
 
+    # Recalculate fitness for the final population
+    final_fitness_scores = [fitness_function(ind) for ind in population]
+
+    # Sort the final population based on fitness and return the best individual
+    sorted_final_population = [
+        x for _, x in sorted(zip(final_fitness_scores, population), key=lambda pair: pair[0], reverse=True)
+    ]
+
     # Return the best individual (highest fitness)
-    return sorted_population[0]
+    return sorted_final_population[0]
 
 # Flask routes
 @app.route("/")
