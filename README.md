@@ -90,14 +90,10 @@ Ensure you have the following installed:
      - Harmonic Intervals Between Consecutive Notes:
        - Reward: Harmonic intervals (e.g., major thirds, perfect fifths) receive a positive score.
        - Penalty: Large melodic leaps (intervals greater than 7 semitones) are discouraged.
-     - Harmonic Relationships Between Instruments:
-       - Adds a reward when multiple instruments playing the same note exhibit harmonic intervals.
      - Recognizing Repeated Patterns:
        - Rewards phrases that include repeated patterns (e.g., three consecutive notes forming a motif).
      - Balancing Long and Short Notes:
        - Encourages a dynamic phrase by rewarding a balanced mix of long and short notes.
-     - Instrument Diversity:
-       - Adds a score for using a variety of unique instruments in the phrase.
      - Penalizing Excessive REST Notes:
        - Applies a penalty if REST notes exceed 20% of the total phrase length.
   
