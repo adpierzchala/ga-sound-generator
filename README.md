@@ -45,28 +45,22 @@ Ensure you have the following installed:
 
 ### Setup Instructions
 
-1. **Clone the Repository**:
-   ```bash
-   git clone https://github.com/adpierzchala/ga-sound-generator.git
-   cd ga-sound-generator
-   ```
+1. **Download and Extract the Project Files**:
+   Once the ZIP file is downloaded, extract its contents to a folder on your computer, e.g., C:\ga-sound-generator
 
 2. **Install Dependencies**:
-   Install the required Python libraries using the `requirements.txt` file:
+   Install the required Python libraries which are in the `requirements.txt` file, e.g.:
    ```bash
-   pip install -r requirements.txt
+   pip install flask
    ```
 
 3. **Add Audio Samples**:
-   Place `.wav` audio samples for different instruments in the `samples` folder. The sample filenames should follow this format:  
+   Modify the path to sample files in the variable `SAMPLE_DIR` e.g.: 
+   ```bash
+   SAMPLE_DIR = "C:\ga-sound-generator\samples"
    ```
-   <NOTE>_<INSTRUMENT>.wav
-   ```
-   Example:
-   - `C_piano.wav`
-   - `D_violin.wav`
 
-4. **Run the Application**:
+5. **Run the Application**:
    Start the Flask server:
    ```bash
    python main.py
