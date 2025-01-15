@@ -46,28 +46,15 @@ Ensure you have the following installed:
 ### Setup Instructions
 
 1. **Download and Extract the Project Files**:
-   Once the ZIP file is downloaded, extract its contents to a folder on your computer, e.g.:
-   ```bash
-   C:\ga-sound-generator
-   ```
+   Once the ZIP file is downloaded, extract its contents to a folder on your computer.
 
 3. **Install Dependencies**:
-   Install the required Python libraries which are in the `requirements.txt` file, e.g.:
-   ```bash
-   pip install flask
-   ```
+   Install the required Python libraries which are in the `requirements.txt` file.
 
 4. **Add Audio Samples**:
-   Modify the path to sample files in the variable `SAMPLE_DIR` e.g.: 
-   ```bash
-   SAMPLE_DIR = "C:\ga-sound-generator\samples"
-   ```
+   Modify the path to sample files in the variable `SAMPLE_DIR` in `main.py` file.
 
 5. **Run the Application**:
-   Start the Flask server:
-   ```bash
-   python main.py
-   ```
    The application will be available at [http://127.0.0.1:5000](http://127.0.0.1:5000).
 
 ---
