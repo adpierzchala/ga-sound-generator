@@ -9,23 +9,35 @@ from scipy.signal import resample
 NOTES = ["C", "D", "E", "F", "G", "A", "B"] # Musical notes
 SAMPLE_RATE = 48000 # Audio sample rate in Hz
 ALLOWED_INSTRUMENTS = ["piano", "violin", "flute"] # Default instruments
-SAMPLE_DIR = SAMPLE_DIR = "C:/Users/Uzytkownik/Downloads/samples" # Path to sample files
+SAMPLE_DIR = "C:/Users/Uzytkownik/Downloads/samples" # Path to sample files
 
 # Flask app initialization
 app = Flask(__name__)
 
 
-# Normalize audio
 def normalize_audio(sound):
-    """Normalize audio to the range of int16."""
+    """
+    Normalize audio to the range of int16.
+    
+    The audio is being scaled to the range of a 16-bit integer, which is the standard format for audio data.
+    A 16-bit signed integer (np.int16) can represent values from -32768 to 32767.
+    Multiplying by 32767 scales the normalized values (which are in the range [-1, 1]) to fit into this range.
+    Most audio processing tools and file formats (like .wav) expect audio data to be in this format.
+    """
     if np.max(np.abs(sound)) == 0: # Avoid division by zero
         return sound
     return (sound / np.max(np.abs(sound)) * 32767).astype(np.int16) 
 
 
-# Apply fade-in and fade-out 
 def apply_fade(sound, fade_duration=0.01):
-    """Apply fade-in and fade-out to an audio sample."""
+    """
+    Apply fade-in and fade-out to an audio sample.
+
+    Fade effects are commonly used in audio processing to create smoother transitions
+    at the start and end of an audio signal. A fade-in gradually increases the amplitude
+    of the audio from zero to its original level, while a fade-out gradually decreases 
+    the amplitude to zero. These effects help eliminate abrupt starts or ends in audio files.
+    """
     fade_samples = int(fade_duration * SAMPLE_RATE)
     fade_in = np.linspace(0, 1, fade_samples)
     fade_out = np.linspace(1, 0, fade_samples)
@@ -33,9 +45,14 @@ def apply_fade(sound, fade_duration=0.01):
     sound[-fade_samples:] = sound[-fade_samples:] * fade_out
     return sound
 
-# Apply fade-out 
 def apply_fade_out(sound, fade_duration=0.05):
-    """Apply a fade-out to the entire sound."""
+    """
+    Apply a fade-out to the entire sound.
+    
+    A fade-out gradually decreases the amplitude of the audio signal from its original level 
+    to zero over a specified duration. This effect is commonly used to create a smooth ending 
+    for audio tracks, avoiding abrupt stops that may sound unnatural.    
+    """
     fade_samples = int(fade_duration * SAMPLE_RATE)
     if len(sound) < fade_samples:
         fade_samples = len(sound) # Adjust for very short sounds
@@ -44,7 +61,6 @@ def apply_fade_out(sound, fade_duration=0.05):
     return sound
 
 
-# Load a sample
 def load_sample(instrument, note, tempo):
     """Load the appropriate audio sample for a given note and instrument."""
     if note == "REST":
@@ -54,16 +70,22 @@ def load_sample(instrument, note, tempo):
 
     try:
         rate, sound = read(file_path)
+        # rate: The sample rate of the audio file (in Hz), 
+        # which indicates the number of audio samples per second.
+        # sound: A NumPy array containing the audio data.
         if rate != SAMPLE_RATE:
-            # Resample to match the desired sample rate
+            # Calculate how many samples are needed in the resampled audio 
+            # to maintain the same playback duration
             num_samples = int(len(sound) * SAMPLE_RATE / rate)
+            # Resample to match the desired sample rate
             sound = resample(sound, num_samples).astype(np.int16)
         
+        # Handle stereo audio files, converting them to mono by averaging the two channels
         if len(sound.shape) == 2:
             sound = sound.mean(axis=1).astype(np.int16)
         sound = normalize_audio(sound) # Normalize the audio
         sound = apply_fade(sound) # Apply fade effect
-        return sound
+        return sound 
     except FileNotFoundError:
         print(f"Sample file {file_path} not found.")
         # Return silence if the sample file is missing
@@ -83,10 +105,17 @@ def play_phrase_with_samples(phrase, tempo):
         combined_sample = np.zeros(expected_length, dtype=np.float32)
         for instrument in note["instruments"]:
             sample = load_sample(instrument, note_name, tempo)
+            # Trim the sample to the desired length if it's too long
             if len(sample) > expected_length:
                 sample = sample[:expected_length]
+
+            # Pad the sample if it's too short
+            # This adds silence to the sample
+            # However duration is no longer than 1s and all files in sample file last at least that
             else:
                 sample = np.pad(sample, (0, expected_length - len(sample)))
+
+            # Combine samples for instruments
             combined_sample += sample
 
         # Normalize the combined sample
@@ -100,10 +129,10 @@ def play_phrase_with_samples(phrase, tempo):
     return normalize_audio(sound) # Final normalization
 
 
-# Generate an initial population of musical phrases
 def generate_initial_population_with_notes(pop_size, num_notes, instruments):
     """Create an initial population of musical phrases with a fixed number of notes."""
     population = []
+    # Create random phrases for each `parent`
     for _ in range(pop_size):
         phrase = []
         for _ in range(num_notes):
@@ -122,7 +151,6 @@ def generate_initial_population_with_notes(pop_size, num_notes, instruments):
 
 HARMONIC_INTERVALS = [0, 2, 4, 5, 7, 9, 11]
 
-# Fitness function 
 def fitness_function(phrase):
     """Evaluate the fitness of a musical phrase."""
     score = 0
@@ -182,7 +210,6 @@ def fitness_function(phrase):
     return score
 
 
-# Genetic algorithm
 def genetic_algorithm(population, generations, mutation_rate, allowed_instruments):
     """Optimize a population of phrases using a genetic algorithm."""
     for _ in range(generations):
