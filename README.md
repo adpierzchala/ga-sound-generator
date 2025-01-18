@@ -66,7 +66,7 @@ Tools and technologies used during the development of the software:
 - **Python**: Main programming language (Version: 3.13.1)
 - **HTML**: Web structure (Version: 5.0)
 - **Bootstrap**: Interface Styling (Version: 5.1.3)
-- **JavaScript**: Frontend web development (ES6)
+- **JavaScript**: Front-end web development (ES6)
 - **Visual Studio Code**: Code Editor (Version: 1.96.2)
 
 Libraries:
