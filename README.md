@@ -25,23 +25,25 @@ A Flask-based web application that uses a **genetic algorithm** (GA) to compose 
 
 ## 1. Software Description
 
-### a. Short Name:
-**GA Sound Generator**
-
-### b. Full Name:
-**Genetic Algorithm-Based Musical Phrase Generator**
-
-### c. Brief Description with Objectives:
-The "GA Sound Generator" project allows users to generate musical phrases using genetic algorithms. The goal of the project is to create a flexible tool that lets users manipulate parameters such as tempo, instruments, and phrase length to produce unique melodies in .wav format. The application provides an interactive web interface for easy user interaction with the system. The generator can be used in music education, music prototyping, and creative sound applications.
+  ### a. Short Name:
+  **GA Sound Generator**
+  
+  ### b. Full Name:
+  **Genetic Algorithm-Based Musical Phrase Generator**
+  
+  ### c. Brief Description with Objectives:
+  The "GA Sound Generator" project allows users to generate musical phrases using genetic algorithms. The goal of the project is to create a flexible tool that lets users manipulate 
+  parameters such as tempo, instruments, and phrase length to produce unique melodies in .wav format. The application provides an interactive web interface for easy user 
+  interaction with the system. The generator can be used in music education, music prototyping, and creative sound applications.
 
 ## 2. Copyright
 
-### a. Authors:
-- Kamila Mańska
-- Adrianna Pierzchała
-
-### b. Licensing Terms:
-This project is licensed under the GNU General Public License v3.0. See the [LICENSE](LICENSE) file for details.
+  ### a. Authors:
+  - Kamila Mańska
+  - Adrianna Pierzchała
+  
+  ### b. Licensing Terms:
+  This project is licensed under the GNU General Public License v3.0. See the [LICENSE](LICENSE) file for details.
 
 ## 3. Requirements Specification
 
@@ -60,57 +62,57 @@ This project is licensed under the GNU General Public License v3.0. See the [LIC
 
 ## 4. System/Software Architecture
 
-### a. Development Architecture
-Tools and technologies used during the development of the software:
-
-- **Python**: Main programming language (Version: 3.13.1)
-- **HTML**: Web structure (Version: 5.0)
-- **Bootstrap**: Interface Styling (Version: 5.1.3)
-- **JavaScript**: Front-end web development (ES6)
-- **Visual Studio Code**: Code Editor (Version: 1.96.2)
-
-Libraries:
-- **Flask**: Web framework (Version: 2.3.2)
-- **NumPy**: Data processing (Version: 1.24.3)
-- **SciPy**: Signal processing (Version: 1.11.2)
-
-### b. Deployment Architecture
-Tools and technologies required to run the software in the target environment:
-
-- **Python Interpreter**: Backend execution (Version: 3.7+)
-- **Web browser**: User interface (Any)
-
-Libraries:
-
-- **Flask**: Web framework (Version: 2.3.2)
-- **NumPy**: Data processing (Version: 1.24.3)
-- **SciPy**: Signal processing (Version: 1.11.2)
+  ### a. Development Architecture
+  Tools and technologies used during the development of the software:
+  
+  - **Python**: Main programming language (Version: 3.13.1)
+  - **HTML**: Web structure (Version: 5.0)
+  - **Bootstrap**: Interface Styling (Version: 5.1.3)
+  - **JavaScript**: Front-end web development (ES6)
+  - **Visual Studio Code**: Code Editor (Version: 1.96.2)
+  
+  Libraries:
+  - **Flask**: Web framework (Version: 2.3.2)
+  - **NumPy**: Data processing (Version: 1.24.3)
+  - **SciPy**: Signal processing (Version: 1.11.2)
+  
+  ### b. Deployment Architecture
+  Tools and technologies required to run the software in the target environment:
+  
+  - **Python Interpreter**: Backend execution (Version: 3.7+)
+  - **Web browser**: User interface (Any)
+  
+  Libraries:
+  
+  - **Flask**: Web framework (Version: 2.3.2)
+  - **NumPy**: Data processing (Version: 1.24.3)
+  - **SciPy**: Signal processing (Version: 1.11.2)
 
 ## 5. Tests
 
-### a. Test Scenarios:
+  ### a. Test Scenarios:
+  
+  | ID  | Test description                                                                 |
+  | --- | --------------------------------------------------------------------------------- |
+  | T1  | The user can enter the tempo (bpm), select specific instruments, and the length of the musical phrase. |
+  | T2  | The user can modify genetic algorithm parameters (generations, mutation rate).  |
+  | T3  | The user can generate a musical phrase by clicking the "Generate" button.       |
+  | T4  | The user can play the generated phrase in the browser.                          |
+  | T5  | The system displays or hides notes corresponding to a phrase.                    |
+  | T6  | The user can download the generated .wav file.                                  |
+  | T7  | The system handles errors when required inputs are missing (e.g., no instruments). |
 
-| ID  | Test description                                                                 |
-| --- | --------------------------------------------------------------------------------- |
-| T1  | The user can enter the tempo (bpm), select specific instruments, and the length of the musical phrase. |
-| T2  | The user can modify genetic algorithm parameters (generations, mutation rate).  |
-| T3  | The user can generate a musical phrase by clicking the "Generate" button.       |
-| T4  | The user can play the generated phrase in the browser.                          |
-| T5  | The system displays or hides notes corresponding to a phrase.                    |
-| T6  | The user can download the generated .wav file.                                  |
-| T7  | The system handles errors when required inputs are missing (e.g., no instruments). |
-
-### b. Test Execution Report:
-
-| ID  | Results  | Notes                               |
-| --- | -------- | ----------------------------------- |
-| T1  | Success  | User input works as expected.       |
-| T2  | Success  | Parameters adjust correctly.        |
-| T3  | Success  | Phrase generated successfully.      |
-| T4  | Success  | Audio playback works correctly.    |
-| T5  | Success  | Notes display toggles properly.     |
-| T6  | Success  | File downloaded without issues.    |
-| T7  | Success  | Error messages displayed.          |
+  ### b. Test Execution Report:
+  
+  | ID  | Results  | Notes                               |
+  | --- | -------- | ----------------------------------- |
+  | T1  | Success  | User input works as expected.       |
+  | T2  | Success  | Parameters adjust correctly.        |
+  | T3  | Success  | Phrase generated successfully.      |
+  | T4  | Success  | Audio playback works correctly.    |
+  | T5  | Success  | Notes display toggles properly.     |
+  | T6  | Success  | File downloaded without issues.    |
+  | T7  | Success  | Error messages displayed.          |
 
 ---
 
